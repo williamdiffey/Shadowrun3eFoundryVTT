@@ -1,0 +1,328 @@
+{
+  "utilities": {
+    "passcodes": [
+      {
+        "name": "Passcode",
+        "type": "Passcode",
+        "rating": 1,
+        "multiplier": 1,
+        "degradable": false,
+        "description": "Legitimate access credentials. Allows automatic marking of specified nodes without Hacking roll or Overwatch accrual.",
+        "function": "Access",
+        "notes": "Rating indicates breadth/restrictiveness of access. Can be as narrow as a single datafile or as broad as an entire host."
+      }
+    ],
+    "programs": [
+      {
+        "name": "Analyze",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 3,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing the Search and Render prompt.",
+        "associatedPrompt": "Search and Render",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Armor",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 3,
+        "degradable": true,
+        "description": "May be used to soak Overload Damage. Instead of applying damage to Matrix Condition Monitor, degrade Armor on a point-for-point basis.",
+        "associatedPrompt": "Attack an Icon (Defense)",
+        "effect": "Damage Soak",
+        "soakType": "Overload"
+      },
+      {
+        "name": "Attack",
+        "type": "Program",
+        "category": "Combat",
+        "multiplier": 0,
+        "degradable": false,
+        "description": "Operational combat program designed to inflict damage upon other icons.",
+        "associatedPrompt": "Attack an Icon",
+        "effect": "Damage",
+        "variants": [
+          { "damageLevel": "Light", "damageType": "Overload", "multiplier": 2 },
+          { "damageLevel": "Moderate", "damageType": "Overload", "multiplier": 3 },
+          { "damageLevel": "Severe", "damageType": "Overload", "multiplier": 4 },
+          { "damageLevel": "Deadly", "damageType": "Overload", "multiplier": 5 },
+          { "damageLevel": "Light", "damageType": "Biofeedback", "multiplier": 5, "specialName": "Nosebleed" },
+          { "damageLevel": "Moderate", "damageType": "Biofeedback", "multiplier": 10, "specialName": "Blackout" },
+          { "damageLevel": "Severe", "damageType": "Biofeedback", "multiplier": 15, "specialName": "Killjoy" },
+          { "damageLevel": "Deadly", "damageType": "Biofeedback", "multiplier": 20, "specialName": "Black Hammer" }
+        ]
+      },
+      {
+        "name": "Baby Monitor",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 3,
+        "degradable": true,
+        "description": "Allows user to get a peek at current Overwatch level. GM relays boxes accrued in terms of wound levels.",
+        "associatedPrompt": "Scrub Datastream",
+        "effect": "Information"
+      },
+      {
+        "name": "Biofeedback Filtering",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 3,
+        "degradable": true,
+        "description": "May be used to soak Biofeedback Damage on a point-for-point basis.",
+        "associatedPrompt": "Attack an Icon (Defense)",
+        "effect": "Damage Soak",
+        "soakType": "Biofeedback"
+      },
+      {
+        "name": "Browse",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 1,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing any Index prompts.",
+        "associatedPrompt": "Index Data Store, Index Subscribed Devices, Index Users and Scheduling",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Decrypt",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 4,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing the Crack Protections prompt to decode an Encrypted target.",
+        "associatedPrompt": "Crack Protections (Encryption)",
+        "effect": "TN Reduction",
+        "notes": "Base Decrypt time = Encryption Rating x 10 minutes."
+      },
+      {
+        "name": "Encrypt",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 3,
+        "degradable": false,
+        "description": "Encrypts a target up to the rating of the utility when using Configure Protections prompt.",
+        "associatedPrompt": "Configure Protections",
+        "effect": "Apply Protection",
+        "protectionType": "Encryption"
+      },
+      {
+        "name": "Evasion",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 4,
+        "degradable": true,
+        "description": "Allows user to utilize Toggle Visibility prompt to become Hidden, even while currently Link-Locked.",
+        "associatedPrompt": "Toggle Visibility",
+        "effect": "Stealth"
+      },
+      {
+        "name": "Exploit",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 5,
+        "degradable": true,
+        "description": "Decreases the user's target number by its rating while utilizing the Access Node prompt.",
+        "associatedPrompt": "Access Node",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Jackpot",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 5,
+        "degradable": true,
+        "description": "Decreases the user's target number by its rating while utilizing the Siphon Paydata prompt.",
+        "associatedPrompt": "Siphon Paydata",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Jamboree",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 1,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing the Jam Signal prompt.",
+        "associatedPrompt": "Jam Signal",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Kill Switch",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 5,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing the Crack Protections prompt to disarm a Databombed target.",
+        "associatedPrompt": "Crack Protections (Databomb)",
+        "effect": "TN Reduction",
+        "notes": "Failure results in self-destruction of target icon."
+      },
+      {
+        "name": "Lock-On",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 6,
+        "degradable": false,
+        "description": "Decreases user's TN by rating while using Trace Signal. Even one success establishes a Link-Lock.",
+        "associatedPrompt": "Trace Signal",
+        "effect": "TN Reduction + Link-Lock"
+      },
+      {
+        "name": "Medic",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 4,
+        "degradable": true,
+        "description": "Decreases the user's target number by its rating while utilizing the Repair an Icon prompt.",
+        "associatedPrompt": "Repair an Icon",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Mirrors",
+        "type": "Program",
+        "category": "Defensive",
+        "multiplier": 4,
+        "degradable": true,
+        "description": "Decreases user's TN by rating while being scrutinized by System Sweep or Authenticate ability.",
+        "associatedPrompt": "Defense vs System Sweep / Authenticate",
+        "effect": "TN Reduction",
+        "notes": "Works by spamming fake token icons (falsified records, timestamps)."
+      },
+      {
+        "name": "Read/Write",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 2,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing any Datafile prompts.",
+        "associatedPrompt": "Access Datafile, Duplicate/Download Datafile, Edit/Upload Datafile",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Redirect",
+        "type": "Program",
+        "category": "Defensive",
+        "multiplier": 5,
+        "degradable": true,
+        "description": "Increases target number by its rating for enemy icons attempting to target the user with the Trace Signal prompt.",
+        "associatedPrompt": "Defense vs Trace Signal",
+        "effect": "TN Increase (Enemy)"
+      },
+      {
+        "name": "Saboteur",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 4,
+        "degradable": false,
+        "description": "Databombs an unprotected target up to the rating of the utility when using Configure Protections prompt.",
+        "associatedPrompt": "Configure Protections",
+        "effect": "Apply Protection",
+        "protectionType": "Databomb"
+      },
+      {
+        "name": "Shield",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 3,
+        "degradable": true,
+        "description": "Mitigates special IC attacks targeting hardware (MPCP, Memory, utility slots). Degrade Shield instead of hardware.",
+        "associatedPrompt": "Defense vs IC Special Abilities",
+        "effect": "Hardware Protection",
+        "protectsAgainst": ["Corruption", "Corrupt and Burn", "Erosion"]
+      },
+      {
+        "name": "Signal Booster",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 1,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing the Send Transmission prompt.",
+        "associatedPrompt": "Send Transmission",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Sleaze",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 4,
+        "degradable": true,
+        "description": "Allows user to harmlessly pass-through (ignore) any Matrix barrier with rating equal-to or lower than program's current rating.",
+        "associatedPrompt": "Movement",
+        "effect": "Barrier Bypass",
+        "notes": "Degrades by 1 point after each use."
+      },
+      {
+        "name": "Slow",
+        "type": "Program",
+        "category": "Combat",
+        "multiplier": 4,
+        "degradable": false,
+        "description": "Specialized combat program that reduces target icon's Initiative by 3 points per net success instead of staging damage.",
+        "associatedPrompt": "Attack an Icon",
+        "effect": "Initiative Reduction",
+        "notes": "Icon crashes if Initiative reduced to 0 within a single turn."
+      },
+      {
+        "name": "Smoke Screen",
+        "type": "Program",
+        "category": "Defensive",
+        "multiplier": 4,
+        "degradable": true,
+        "description": "Increases target number by its current rating for enemy icons attempting to target the user with Search and Render.",
+        "associatedPrompt": "Defense vs Search and Render",
+        "effect": "TN Increase (Enemy)"
+      },
+      {
+        "name": "Snoop",
+        "type": "Program",
+        "category": "Offensive",
+        "multiplier": 3,
+        "degradable": false,
+        "description": "Decreases the user's target number by its rating while utilizing Tap Datastream or Spoof Datastream prompts.",
+        "associatedPrompt": "Tap Datastream, Spoof Datastream",
+        "effect": "TN Reduction"
+      },
+      {
+        "name": "Suppression",
+        "type": "Program",
+        "category": "Operational",
+        "multiplier": 5,
+        "degradable": true,
+        "description": "May be used when crashing an icon. Instead of accruing Overwatch, degrade Suppression to suppress the crash.",
+        "associatedPrompt": "Attack an Icon (On Crash)",
+        "effect": "Overwatch Prevention"
+      }
+    ],
+    "protocols": [
+      {
+        "name": "Dewormer",
+        "type": "Protocol",
+        "multiplier": 3,
+        "degradable": false,
+        "description": "Purges a cyberdeck or Matrix enabled device of an Infiltrating IC Agent. Takes hours equal to rating of infiltrator. Can only purge infiltrators up to its rating.",
+        "function": "Anti-Infiltration",
+        "effect": "Purge IC"
+      },
+      {
+        "name": "Nexus",
+        "type": "Protocol",
+        "multiplier": 4,
+        "degradable": false,
+        "description": "Grants priority access to Denver Data Haven. Decreases TN by rating while conducting Matrix legwork or using Etiquette: Matrix.",
+        "function": "Legwork",
+        "effect": "TN Reduction",
+        "associatedSkill": "Etiquette: Matrix"
+      },
+      {
+        "name": "Shadownet",
+        "type": "Protocol",
+        "multiplier": 5,
+        "degradable": false,
+        "description": "Grants passcode access to Shadownet LTG. Delays Convergence trace information and physical security response by minutes equal to rating.",
+        "function": "Access + Safety",
+        "effect": "Delay Convergence"
+      }
+    ]
+  }
+}

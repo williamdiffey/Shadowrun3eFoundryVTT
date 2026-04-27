@@ -33,11 +33,6 @@
           "notes"
         ]
       },
-      "npc": {
-        "htmlFields": [
-          "notes"
-        ]
-      },
       "vehicle": {
         "htmlFields": ["notes"]
       }
@@ -213,6 +208,13 @@
       "label": "Vehicles",
       "path": "packs/sr3e-vehicles.db",
       "type": "Actor",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-programs",
+      "label": "Matrix Programs",
+      "path": "packs/sr3e-programs.db",
+      "type": "Item",
       "system": "The2ndChumming3e"
     }
   ],

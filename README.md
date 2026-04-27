@@ -247,9 +247,7 @@ Equip one armour item via the actor sheet. Only the equipped piece contributes t
 
 ## What is not yet implemented
 - Full Defense posture (melee/ranged defensive mode)
-- ECM/ECCM
-- Flux
-- Field for Race needs adding back in
+- add compendium for random actors, cyberdecks, programs, agents
 - Matrix data sheath could be useful
 - All compendiums need to be added (not via macro) and cleaned up
 - Matrix compendium needs to be compiled

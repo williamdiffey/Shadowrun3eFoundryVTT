@@ -1,0 +1,44 @@
+{
+  "intrusionCountermeasures": [
+    {
+      "name": "Alert",
+      "grade": "White",
+      "multiplier": null,
+      "sizeMp": 100,
+      "maxPerSheaf": 2,
+      "effect": "Increases all Hacking TNs by +2"
+    },
+    {
+      "name": "Barrier",
+      "grade": "White",
+      "multiplier": 3,
+      "sizeFormula": "Rating^2 × Multiplier",
+      "effect": "Blocks pathway. Must be crashed or bypassed with Sleaze."
+    },
+    {
+      "name": "Encryption",
+      "grade": "White",
+      "multiplier": 3,
+      "effect": "Protects datafile. Requires Crack Protections or Decrypt."
+    },
+    {
+      "name": "Databomb",
+      "grade": "White",
+      "multiplier": 4,
+      "effect": "Self-deletes file on unauthorized access. Requires Kill Switch."
+    },
+    {
+      "name": "System Sweep",
+      "grade": "White",
+      "sizeMp": 100,
+      "maxPerSheaf": 2,
+      "effect": "Immediate Hacking vs Sys/Sec test for all falsified marks in system."
+    },
+    {
+      "name": "Security Decker",
+      "grade": "Graded and Certified by GOD",
+      "multiplier": null,
+      "effect": "Skilled hacker NPC with cyberdeck and utilities."
+    }
+  ]
+}
