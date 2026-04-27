@@ -137,6 +137,85 @@
       }
     }
   },
+  "packs": [
+    {
+      "name": "sr3e-adept-powers",
+      "label": "Adept Powers",
+      "path": "packs/sr3e-adept-powers.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-bioware",
+      "label": "Bioware",
+      "path": "packs/sr3e-bioware.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-cyberware",
+      "label": "Cyberware",
+      "path": "packs/sr3e-cyberware.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-drones",
+      "label": "Drones",
+      "path": "packs/sr3e-drones.db",
+      "type": "Actor",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-firearms",
+      "label": "Firearms",
+      "path": "packs/sr3e-firearms.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-melee",
+      "label": "Melee Weapons",
+      "path": "packs/sr3e-melee.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-projectiles",
+      "label": "Projectile Weapons",
+      "path": "packs/sr3e-projectiles.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-spells",
+      "label": "Spells",
+      "path": "packs/sr3e-spells.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-vehicle-mods",
+      "label": "Vehicle Mods",
+      "path": "packs/sr3e-vehicle-mods.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-vehicle-weapons",
+      "label": "Vehicle Weapons",
+      "path": "packs/sr3e-vehicle-weapons.db",
+      "type": "Item",
+      "system": "The2ndChumming3e"
+    },
+    {
+      "name": "sr3e-vehicles",
+      "label": "Vehicles",
+      "path": "packs/sr3e-vehicles.db",
+      "type": "Actor",
+      "system": "The2ndChumming3e"
+    }
+  ],
       "url": "https://github.com/williamdiffey/The2ndChumming3e",
   "manifest": "https://raw.githubusercontent.com/williamdiffey/The2ndChumming3e/main/system.json",
   "download": "https://github.com/williamdiffey/The2ndChumming3e/archive/refs/heads/main.zip"

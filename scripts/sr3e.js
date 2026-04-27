@@ -85,6 +85,26 @@ Hooks.once('init', () => {
   console.log('SR3E | Ready');
 });
 
+// Auto-create the SR3 character importer macro for the GM
+Hooks.once('ready', async () => {
+  if (!game.user.isGM) return;
+  const MACRO_NAME = 'Import SR3 Character Creator JSON';
+  if (game.macros.find(m => m.name === MACRO_NAME)) return;
+  try {
+    const src = await fetch('systems/The2ndChumming3e/scripts/macros/import-sr3-character.js')
+      .then(r => r.text());
+    await Macro.create({
+      name: MACRO_NAME,
+      type: 'script',
+      command: src,
+      img: 'icons/svg/mystery-man.svg',
+    });
+    ui.notifications.info('SR3E: "Import SR3 Character Creator JSON" macro added to your macro library.');
+  } catch (err) {
+    console.warn('SR3E | Could not auto-create import macro:', err);
+  }
+});
+
 // Vehicle Chase button + drone/VCR labels in the combat tracker sidebar
 Hooks.on('renderCombatTracker', (_app, html) => {
   const el  = html instanceof HTMLElement ? html : html[0];
