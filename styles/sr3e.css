@@ -143,24 +143,95 @@ background-color: #181b26 !important;
   margin-top: 8px;
 }
 
+/* ── Chat action buttons — shared base ──────────────────────── */
 .sr-soak-btn,
-.sr-soak-roll-btn {
+.sr-soak-roll-btn,
+.sr-dodge-roll-btn,
+.sr-drain-btn,
+.sr-drain-roll-btn,
+.sr-spell-soak-btn,
+.sr-spell-defense-btn,
+.sr-spell-defense-proceed-btn,
+.sr-melee-roll-btn,
+.sr-astral-roll-btn,
+.sr-astral-soak-btn,
+.sr-astral-soak-roll-btn,
+.sr-aura-reading-btn,
+.sr-contested-roll-btn,
+.sr-ram-vehicle-soak-btn,
+.sr-ram-passenger-resist-btn,
+.sr-summon-confirm-btn {
   width: 100%;
   padding: 6px 10px;
-  background: linear-gradient(135deg, rgba(200,160,64,0.15) 0%, rgba(200,160,64,0.05) 100%);
-  border: 1px solid var(--sr-gold);
   border-radius: var(--r);
-  color: var(--sr-gold);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
 }
 
+/* gold — soak / drain / resist */
+.sr-soak-btn,
+.sr-soak-roll-btn,
+.sr-drain-btn,
+.sr-drain-roll-btn,
+.sr-spell-soak-btn,
+.sr-astral-soak-btn,
+.sr-astral-soak-roll-btn,
+.sr-ram-vehicle-soak-btn,
+.sr-ram-passenger-resist-btn {
+  background: linear-gradient(135deg, rgba(200,160,64,0.15) 0%, rgba(200,160,64,0.05) 100%);
+  border: 1px solid var(--sr-gold);
+  color: var(--sr-gold);
+}
+
 .sr-soak-btn:hover:not(:disabled),
-.sr-soak-roll-btn:hover:not(:disabled) {
+.sr-soak-roll-btn:hover:not(:disabled),
+.sr-drain-btn:hover:not(:disabled),
+.sr-drain-roll-btn:hover:not(:disabled),
+.sr-spell-soak-btn:hover:not(:disabled),
+.sr-astral-soak-btn:hover:not(:disabled),
+.sr-astral-soak-roll-btn:hover:not(:disabled),
+.sr-ram-vehicle-soak-btn:hover:not(:disabled),
+.sr-ram-passenger-resist-btn:hover:not(:disabled) {
   background: rgba(200, 160, 64, 0.25);
   box-shadow: 0 0 10px rgba(200, 160, 64, 0.3);
+}
+
+/* green — dodge / defense */
+.sr-dodge-roll-btn,
+.sr-spell-defense-btn {
+  background: linear-gradient(135deg, rgba(72,199,116,0.15) 0%, rgba(72,199,116,0.05) 100%);
+  border: 1px solid var(--sr-green);
+  color: var(--sr-green);
+}
+
+.sr-dodge-roll-btn:hover:not(:disabled),
+.sr-spell-defense-btn:hover:not(:disabled) {
+  background: rgba(72, 199, 116, 0.25);
+  box-shadow: 0 0 10px rgba(72, 199, 116, 0.3);
+}
+
+/* accent/blue — roll actions */
+.sr-melee-roll-btn,
+.sr-astral-roll-btn,
+.sr-aura-reading-btn,
+.sr-contested-roll-btn,
+.sr-spell-defense-proceed-btn,
+.sr-summon-confirm-btn {
+  background: linear-gradient(135deg, rgba(58,159,214,0.15) 0%, rgba(58,159,214,0.05) 100%);
+  border: 1px solid var(--sr-border-hi);
+  color: var(--sr-accent);
+}
+
+.sr-melee-roll-btn:hover:not(:disabled),
+.sr-astral-roll-btn:hover:not(:disabled),
+.sr-aura-reading-btn:hover:not(:disabled),
+.sr-contested-roll-btn:hover:not(:disabled),
+.sr-spell-defense-proceed-btn:hover:not(:disabled),
+.sr-summon-confirm-btn:hover:not(:disabled) {
+  background: rgba(58, 159, 214, 0.25);
+  box-shadow: 0 0 10px rgba(58, 159, 214, 0.3);
 }
 
 .sr-soak-btn:disabled,

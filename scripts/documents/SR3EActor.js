@@ -579,7 +579,7 @@ _prepareCharacter(sys, attr) {
             postRollHtml = `
               <div class="sr-soak-action">
                 <button class="sr-dodge-roll-btn" data-payload='${dodgeContext}'>
-                  🎯 ${targetName}: ${attackerName} got ${successes} hit${successes !== 1 ? 's' : ''} — Roll to dodge!
+                  🎯 ${targetName}, roll to dodge.
                 </button>
               </div>`;
           } else {
@@ -649,7 +649,7 @@ _prepareCharacter(sys, attr) {
             postRollHtml += `
               <div class="sr-soak-action">
                 <button class="sr-dodge-roll-btn" data-payload='${dodgeCtx}'>
-                  🎯 ${targetName}: ${casterName} got ${successes} hit${successes !== 1 ? 's' : ''} — Roll to dodge!
+                  🎯 ${targetName}, roll to dodge.
                 </button>
               </div>`;
           } else {
@@ -910,7 +910,7 @@ _prepareCharacter(sys, attr) {
         // Dodge cancelled all hits — miss
         dodgeResultHtml = `
           <div class="sr-dodge-result sr-dodge-success">
-            ✅ ${dodgerName} dodges! ${successes} dodge hits vs ${dp.attackSuccesses} attack hits (net ${netHits}) — ${attackerName}'s attack missed!
+            ✅ Dodge Successful! No damage taken.
           </div>`;
       } else {
         // Dodge failed — full hit lands, staging based on raw attack successes (dodge doesn't reduce staging)
@@ -920,8 +920,7 @@ _prepareCharacter(sys, attr) {
           : SR3EActor._soakButtonHtml(dp);
         dodgeResultHtml = `
           <div class="sr-dodge-result sr-dodge-fail">
-            ❌ ${dodgerName}: ${successes} dodge hits vs ${dp.attackSuccesses} attack hits — dodge failed, full hit lands.
-            Incoming: <strong>${dp.stagedPower}${dp.stagedLevel} ${trackLabel}</strong>
+            ❌ Dodge Failed! Incoming: <strong>${dp.stagedPower}${dp.stagedLevel} ${trackLabel}</strong>
           </div>
           ${soakBtn}`;
       }
