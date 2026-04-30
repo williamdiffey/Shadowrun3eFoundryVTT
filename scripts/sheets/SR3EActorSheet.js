@@ -378,7 +378,8 @@ export class SR3EActorSheet extends foundry.applications.sheets.ActorSheetV2 {
         <input class="attr-input attr-force" type="number" name="system.attributes.${key}.force"
                value="${attr[key]?.force ?? 0}" min="0" max="10" title="Adept force"/>
         <span class="attr-force-total" title="Effective">(${(attr[key]?.base ?? 3) + (attr[key]?.force ?? 0)})</span>` : ''}
-        <i class="fas fa-dice-d6 rollable" data-action="rollAttr" data-attr="${key}" title="Roll ${label}"></i>
+        ${key === 'quickness' && (d.armorEncPenalty ?? 0) > 0 ? `<span class="attr-enc-penalty" title="Armor encumbrance penalty (equipped armor exceeds Quickness)">−${d.armorEncPenalty}</span>` : ''}
+        <i class="fas fa-dice-d6 rollable" data-action="rollAttr" data-attr="${key}" title="Shift-Click to use Phys. Dice" ${label}"></i>
       </div>
     </div>`).join('');
 
@@ -1579,7 +1580,7 @@ export class SR3EActorSheet extends foundry.applications.sheets.ActorSheetV2 {
       title="${stored ? 'Remove from storage' : 'Put in storage'}"></i>` : '';
     return `<div class="item-controls">
       ${storeIcon}
-      ${hasRoll ? `<i class="fas fa-dice-d6 rollable" data-action="${rollAction}" data-item-id="${itemId}" title="Roll"></i>` : ''}
+      ${hasRoll ? `<i class="fas fa-dice-d6 rollable" data-action="${rollAction}" data-item-id="${itemId}" title="Shift+Click to use Real Dice"></i>` : ''}
       <i class="fas fa-edit" data-action="itemEdit" data-item-id="${itemId}" title="Edit"></i>
       <i class="fas fa-trash" data-action="itemDelete" data-item-id="${itemId}" title="Delete"></i>
     </div>`;
@@ -1697,29 +1698,23 @@ export class SR3EActorSheet extends foundry.applications.sheets.ActorSheetV2 {
       val = 3;
     }
 
-    const rollOptions = await SR3EActorSheet._promptRollOptions(actor, { physicalDice });
+    const rollOptions = await SR3EActorSheet._promptRollOptions(actor, { defaultPool: val, rollAttr: attr, physicalDice });
     if (rollOptions) {
-      const label = attr.charAt(0).toUpperCase() + attr.slice(1);
-      await actor.rollPool(val, rollOptions.tn, label, rollOptions);
+      const selectedAttr = rollOptions.selectedAttr ?? attr;
+      const label = selectedAttr.charAt(0).toUpperCase() + selectedAttr.slice(1);
+      await actor.rollPool(rollOptions.pool ?? val, rollOptions.tn, label, rollOptions);
     }
   }
 
   static async _onRollSkill(ev, target) {
-    const itemId      = (target ?? ev.currentTarget).dataset.itemId;
-    const item        = this.actor.items.get(itemId);
+    const itemId = (target ?? ev.currentTarget).dataset.itemId;
+    const item   = this.actor.items.get(itemId);
     if (!item) return;
     const physicalDice = ev.shiftKey ?? false;
-    const s            = item.system;
-    const woundMod     = this.actor.system.woundMod ?? 0;
-    const isAdept      = (this.actor.system.magicType ?? '') === 'Adept';
-    const forceBonus   = isAdept ? (s.force ?? 0) : 0;
-    const basePool     = s.rating
-      ? Math.max(1, (s.rating ?? 0) + forceBonus + woundMod)
-      : Math.max(1, (s.attributeValue ?? 3) - 2 + woundMod);
-    const specNote     = s.specialisation ? ` (+2 with ${s.specialisation})` : '';
-    const forceNote    = forceBonus > 0 ? ` [+${forceBonus} Improved Ability]` : '';
-    const rollOptions  = await SR3EActorSheet._promptRollOptions(this.actor, { defaultPool: basePool, poolNote: specNote + forceNote, physicalDice });
-    if (rollOptions) await item.rollSkill(rollOptions.tn, { ...rollOptions, pool: rollOptions.pool });
+    const rollOptions  = await SR3EActorSheet._promptSkillRollOptions(this.actor, item, { physicalDice });
+    if (!rollOptions) return;
+    const selectedItem = this.actor.items.get(rollOptions.selectedSkillId) ?? item;
+    await selectedItem.rollSkill(rollOptions.tn, { ...rollOptions, pool: rollOptions.pool });
   }
 
   static async _onRollWeapon(ev, target) {
@@ -1822,6 +1817,7 @@ export class SR3EActorSheet extends foundry.applications.sheets.ActorSheetV2 {
       defaultPool: intVal,
       poolNote: 'Intelligence',
       physicalDice,
+      rollAttr: 'intelligence',
     });
     if (!rollOptions) return;
     await actor.rollPool(rollOptions.pool ?? intVal, rollOptions.tn, 'Assensing', {
@@ -2096,38 +2092,49 @@ static async _onHealDamage(ev, target) {
   /*  Shared roll-options dialog                                          */
   /* ------------------------------------------------------------------ */
 
-  static async _promptRollOptions(actor, { defaultPool = null, poolNote = '', physicalDice = false } = {}) {
+  static async _promptRollOptions(actor, { defaultPool = null, poolNote = '', physicalDice = false, rollAttr = null } = {}) {
     const karmaPool = actor?.system.karmaPool ?? 0;
+    const attrs = actor?.system.attributes ?? {};
+
+    const attrList = [
+      { key: 'body',         label: 'Body',         val: attrs.body?.value         ?? attrs.body?.base         ?? 3 },
+      { key: 'quickness',    label: 'Quickness',    val: attrs.quickness?.value    ?? attrs.quickness?.base    ?? 3 },
+      { key: 'strength',     label: 'Strength',     val: attrs.strength?.value     ?? attrs.strength?.base     ?? 3 },
+      { key: 'charisma',     label: 'Charisma',     val: attrs.charisma?.value     ?? attrs.charisma?.base     ?? 3 },
+      { key: 'intelligence', label: 'Intelligence', val: attrs.intelligence?.value ?? attrs.intelligence?.base ?? 3 },
+      { key: 'willpower',    label: 'Willpower',    val: attrs.willpower?.value    ?? attrs.willpower?.base    ?? 3 },
+      { key: 'reaction',     label: 'Reaction',     val: attrs.reaction?.value     ?? 3 },
+      { key: 'essence',      label: 'Essence',      val: attrs.essence?.value      ?? 6 },
+      { key: 'magic',        label: 'Magic',        val: attrs.magic?.value        ?? attrs.magic?.base        ?? 0 },
+    ];
+
+    const selectedKey = rollAttr?.toLowerCase() ?? attrList[0].key;
+    const selectedAttr = attrList.find(a => a.key === selectedKey) ?? attrList[0];
+    const initialPool = defaultPool ?? selectedAttr.val;
+
+    const optionsHtml = attrList.map(a =>
+      `<option value="${a.key}" data-val="${a.val}"${a.key === selectedKey ? ' selected' : ''}>${a.label}</option>`
+    ).join('');
 
     return new Promise(resolve => {
       new foundry.applications.api.DialogV2({
         window: { title: 'Roll Options' },
         content: `
-          <div style="padding:8px 0">
-            ${defaultPool !== null ? `
-              <div style="margin-bottom:10px">
-                <label>Dice Pool:
-                  <input type="number" id="sr-pool" value="${defaultPool}" min="1" max="30" style="width:60px;margin-left:8px"/>
-                  ${poolNote ? `<span style="font-size:11px;color:var(--sr-muted);margin-left:6px">${poolNote}</span>` : ''}
-                </label>
-              </div>
-            ` : ''}
-            <div style="margin-bottom:10px">
-              <label>Target Number (TN):
-                <input type="number" id="sr-tn" value="4" min="2" max="30" style="width:60px;margin-left:8px"/>
-              </label>
-            </div>
-            ${karmaPool > 0 ? `
-              <div style="margin-bottom:10px">
-                <label>
-                  <input type="checkbox" id="sr-karma" /> Use Karma Pool (${karmaPool} available)
-                </label>
-              </div>
-            ` : ''}
-            ${physicalDice ? `<div style="color:var(--sr-amber);font-size:11px;margin-top:4px">📋 Physical dice mode — successes entered after TN</div>` : `
-            <div style="color:var(--sr-muted);font-size:11px;margin-top:8px">
-              Shift-click to use physical dice instead
-            </div>`}
+          <div class="sr3e-roll-opts">
+            <select id="sr-attr" class="roll-opts-attr"
+              onchange="document.getElementById('sr-pool').value=this.options[this.selectedIndex].dataset.val">
+              ${optionsHtml}
+            </select>
+            <span class="roll-opts-colon">:</span>
+            <input type="number" id="sr-pool" class="roll-opts-pool" value="${initialPool}" min="1" max="30"/>
+            <span class="roll-opts-dice-label">dice</span>
+            ${poolNote ? `<p class="roll-opts-note">${poolNote}</p>` : ''}
+            <label class="roll-opts-label" for="sr-tn">Target Number</label>
+            <span></span>
+            <input type="number" id="sr-tn" class="roll-opts-tn" value="4" min="2" max="30"/>
+            <span></span>
+            ${karmaPool > 0 ? `<label class="roll-opts-karma"><input type="checkbox" id="sr-karma"/> Use Karma Pool (${karmaPool} available)</label>` : ''}
+            ${physicalDice ? `<p class="roll-opts-physical">📋 Physical dice mode</p>` : ''}
           </div>
         `,
         buttons: [
@@ -2136,15 +2143,133 @@ static async _onHealDamage(ev, target) {
             action: 'roll',
             default: true,
             callback: (_e, _b, dialog) => {
-              const html     = dialog.element;
-              const tn       = parseInt(html.querySelector('#sr-tn')?.value) || 4;
-              const useKarma = html.querySelector('#sr-karma')?.checked ?? false;
-              const poolEl   = html.querySelector('#sr-pool');
+              const html       = dialog.element;
+              const tn         = parseInt(html.querySelector('#sr-tn')?.value) || 4;
+              const useKarma   = html.querySelector('#sr-karma')?.checked ?? false;
+              const poolEl     = html.querySelector('#sr-pool');
+              const attrEl     = html.querySelector('#sr-attr');
               resolve({
                 tn:           Math.max(2, tn),
                 useKarma,
                 karmaReroll:  useKarma,
                 pool:         poolEl ? Math.max(1, parseInt(poolEl.value) || 1) : null,
+                selectedAttr: attrEl?.value ?? selectedKey,
+                physicalDice,
+              });
+            }
+          },
+          {
+            label:  'Cancel',
+            action: 'cancel',
+            callback: () => resolve(null)
+          }
+        ]
+      }).render(true);
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+
+  static async _promptSkillRollOptions(actor, defaultItem, { physicalDice = false } = {}) {
+    const karmaPool = actor?.system.karmaPool ?? 0;
+    const woundMod  = actor?.system.woundMod ?? 0;
+    const isAdept   = (actor?.system.magicType ?? '') === 'Adept';
+
+    const skills = actor.items
+      .filter(i => i.type === 'skill')
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    if (!skills.length) return null;
+
+    const defaultId = defaultItem?.id ?? skills[0].id;
+
+    const optionsHtml = skills.map(sk => {
+      const s          = sk.system;
+      const forceBonus = isAdept ? (s.force ?? 0) : 0;
+      const pool       = s.rating
+        ? Math.max(1, (s.rating ?? 0) + forceBonus + woundMod)
+        : Math.max(1, (s.attributeValue ?? 3) - 2 + woundMod);
+      return `<option value="${sk.id}" data-pool="${pool}" data-spec="${s.specialisation ?? ''}"${sk.id === defaultId ? ' selected' : ''}>${sk.name}</option>`;
+    }).join('');
+
+    const defSkill   = skills.find(sk => sk.id === defaultId) ?? skills[0];
+    const defS       = defSkill.system;
+    const defForce   = isAdept ? (defS.force ?? 0) : 0;
+    const defPool    = defS.rating
+      ? Math.max(1, (defS.rating ?? 0) + defForce + woundMod)
+      : Math.max(1, (defS.attributeValue ?? 3) - 2 + woundMod);
+    const defSpec    = defS.specialisation ?? '';
+
+    const onSkillChange = `
+      (function(sel){
+        const opt   = sel.options[sel.selectedIndex];
+        const pool  = parseInt(opt.dataset.pool);
+        const spec  = opt.dataset.spec;
+        const cb    = document.getElementById('sr-spec');
+        const lbl   = document.getElementById('sr-spec-lbl');
+        const poolEl = document.getElementById('sr-pool');
+        cb.disabled = !spec;
+        if (!spec) { cb.checked = false; lbl.textContent = 'No specialisation'; }
+        else        { lbl.textContent = spec + ' (+2 dice)'; }
+        poolEl.value = cb.checked ? pool + 2 : pool;
+      })(this)
+    `.replace(/\s+/g, ' ');
+
+    const onSpecChange = `
+      (function(cb){
+        const sel   = document.getElementById('sr-skill');
+        const pool  = parseInt(sel.options[sel.selectedIndex].dataset.pool);
+        document.getElementById('sr-pool').value = cb.checked ? pool + 2 : pool;
+      })(this)
+    `.replace(/\s+/g, ' ');
+
+    return new Promise(resolve => {
+      new foundry.applications.api.DialogV2({
+        window: { title: 'Roll Skill' },
+        content: `
+          <div class="sr3e-skill-opts">
+            <select id="sr-skill" class="skill-opts-select" onchange="${onSkillChange}">
+              ${optionsHtml}
+            </select>
+            <div class="skill-opts-spec-row">
+              <input type="checkbox" id="sr-spec" ${defSpec ? '' : 'disabled'} onchange="${onSpecChange}"/>
+              <label id="sr-spec-lbl" for="sr-spec" class="${defSpec ? '' : 'skill-opts-muted'}">
+                ${defSpec ? defSpec + ' (+2 dice)' : 'No specialisation'}
+              </label>
+            </div>
+            <div class="skill-opts-pool-row">
+              <span class="skill-opts-pool-label">Dice pool</span>
+              <input type="number" id="sr-pool" class="skill-opts-pool" value="${defPool}" min="1" max="30"/>
+            </div>
+            <div class="skill-opts-tn-row">
+              <label class="skill-opts-tn-label" for="sr-tn">Target Number</label>
+              <input type="number" id="sr-tn" class="skill-opts-tn" value="4" min="2" max="30"/>
+            </div>
+            ${karmaPool > 0 ? `
+              <label class="skill-opts-karma">
+                <input type="checkbox" id="sr-karma"/> Use Karma Pool (${karmaPool} available)
+              </label>
+            ` : ''}
+            ${physicalDice ? `<p class="skill-opts-physical">📋 Physical dice mode</p>` : ''}
+          </div>
+        `,
+        buttons: [
+          {
+            label:  'Roll',
+            action: 'roll',
+            default: true,
+            callback: (_e, _b, dialog) => {
+              const html           = dialog.element;
+              const tn             = parseInt(html.querySelector('#sr-tn')?.value) || 4;
+              const useKarma       = html.querySelector('#sr-karma')?.checked ?? false;
+              const poolEl         = html.querySelector('#sr-pool');
+              const selectedSkillId = html.querySelector('#sr-skill')?.value ?? defaultId;
+              resolve({
+                tn:            Math.max(2, tn),
+                useKarma,
+                karmaReroll:   useKarma,
+                pool:          poolEl ? Math.max(1, parseInt(poolEl.value) || 1) : defPool,
+                selectedSkillId,
                 physicalDice,
               });
             }

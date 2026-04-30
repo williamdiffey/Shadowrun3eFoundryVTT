@@ -49,6 +49,11 @@ background-color: #181b26 !important;
   background: rgba(58,159,214,0.15);
 }
 
+.sr-target-list input[type="radio"]::before,
+.sr-target-list input[type="radio"]::after {
+  display: none !important;
+}
+
 /* ── Spell Defense declaration card ─────────────────────── */
 .sr-sd-declare-card {
   border-left: 3px solid var(--sr-green);
@@ -122,6 +127,45 @@ background-color: #181b26 !important;
 .sr-sd-declare-commit-btn {
   color: var(--sr-green) !important;
   border-color: var(--sr-green) !important;
+}
+
+/* ── Melee / boxing card layout ─────────────────────────── */
+.sr-melee-corner input[type="text"],
+.sr-melee-corner input[type="number"] {
+  background: var(--sr-surface);
+  color: var(--sr-text);
+  border: 1px solid var(--sr-border);
+  border-radius: var(--r);
+  padding: 1px 4px;
+}
+
+.sr-melee-field-row {
+  display: grid;
+  grid-template-columns: 52px auto;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--sr-muted);
+}
+
+.sr-melee-name {
+  text-align: center;
+  font-weight: 700;
+}
+
+.sr-melee-skill,
+.sr-melee-weapon {
+  text-align: center;
+  font-size: 11px;
+}
+
+.sr-melee-vs {
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgb(93, 20, 43);
+  margin: 6px 0;
 }
 
 /* ── Soak cards ──────────────────────────────────────────── */
@@ -603,6 +647,17 @@ background-color: #181b26 !important;
 .attr-force-total {
   font-size: 13px;
   color: var(--sr-gold);
+  margin-right: 2px;
+}
+
+.attr-enc-penalty {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sr-red);
+  background: var(--sr-red-bg);
+  border: 1px solid var(--sr-red);
+  border-radius: 3px;
+  padding: 0 4px;
   margin-right: 2px;
 }
 
@@ -1768,6 +1823,17 @@ background-color: #181b26 !important;
   margin-right: 2px;
 }
 
+.attr-enc-penalty {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sr-red);
+  background: var(--sr-red-bg);
+  border: 1px solid var(--sr-red);
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-right: 2px;
+}
+
 .attr-derived {
   font-size: 22px;
   font-weight: 700;
@@ -2487,7 +2553,7 @@ background-color: #181b26 !important;
 
 /* Action dialog styles */
 .act-info {
-  background: #1c2030;
+  background: #415194;
   border-radius: 4px;
   padding: 8px;
   margin-bottom: 10px;
@@ -2581,10 +2647,134 @@ label.act-field input[type=number] {
   color: #dde1f0;
 }
 
-/* DialogV2 content scrolls when taller than viewport */
-.dialog-v2 .window-content {
+/* ── Global dialog overrides — covers every dialog in the system ── */
+.application.dialog,
+.application.dialog .window-header,
+.application.dialog .window-content,
+.application.dialog .dialog-form {
+  background: #181b26 !important;
+  color: #dde1f0 !important;
+}
+.application.dialog .window-content {
   overflow-y: auto;
-  max-height: calc(85vh - 44px); /* 44px = header height */
+  max-height: calc(85vh - 44px);
+}
+.application.dialog input,
+.application.dialog select,
+.application.dialog textarea {
+  background: #181b26 !important;
+  color: #dde1f0 !important;
+  border: 1px solid #2c3148 !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+}
+.application.dialog input:focus,
+.application.dialog select:focus,
+.application.dialog textarea:focus {
+  border-color: #3a9fd6 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.application.dialog label {
+  color: #dde1f0 !important;
+}
+
+.application.dialog button {
+  border-color: #3a8fc8;
+  outline: none;
+}
+
+/* ── Roll Options dialog layout ──────────────────────────── */
+/* 4-column grid: [label/select | colon | number input | unit] */
+.sr3e-roll-opts {
+  padding: 8px 0;
+  display: grid;
+  grid-template-columns: 1fr auto 52px auto;
+  gap: 10px 6px;
+  align-items: center;
+}
+.roll-opts-note,
+.roll-opts-karma,
+.roll-opts-physical {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.roll-opts-colon {
+  color: #7880a0;
+}
+.roll-opts-dice-label {
+  color: #7880a0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.roll-opts-label {
+  color: #dde1f0;
+}
+.roll-opts-pool,
+.roll-opts-tn {
+  width: 52px;
+  text-align: center;
+}
+.roll-opts-note {
+  font-size: 11px;
+  color: #7880a0;
+}
+.roll-opts-physical {
+  color: #d49030;
+  font-size: 11px;
+}
+.roll-opts-karma {
+  color: #dde1f0;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Roll Skill dialog layout ────────────────────────────── */
+.sr3e-skill-opts {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skill-opts-select {
+  width: 100%;
+}
+.skill-opts-spec-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.skill-opts-muted {
+  color: #7880a0;
+}
+.skill-opts-pool-row,
+.skill-opts-tn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.skill-opts-pool-label,
+.skill-opts-tn-label {
+  flex: 1;
+  color: #dde1f0;
+}
+.skill-opts-pool,
+.skill-opts-tn {
+  width: 52px;
+  text-align: center;
+}
+.skill-opts-karma {
+  color: #dde1f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.skill-opts-physical {
+  color: #d49030;
+  font-size: 11px;
+  margin: 0;
 }
 
 /* ── Combat Tracker initiative button ───────────────────── */

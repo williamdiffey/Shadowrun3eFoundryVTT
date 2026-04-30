@@ -152,6 +152,22 @@ _prepareCharacter(sys, attr) {
     }
   }
 
+  // Armor encumbrance: per 2 pts (or fraction) that max(ballistic, impact) > QUI, reduce QUI by 1
+  let armorEncPenalty = 0;
+  {
+    const armorItem = sys.equippedArmor
+      ? (this.items ?? []).find(i => i.id === sys.equippedArmor && i.type === 'armor')
+      : null;
+    if (armorItem) {
+      const armorRating = Math.max(armorItem.system?.ballistic ?? 0, armorItem.system?.impact ?? 0);
+      const quickVal    = attr.quickness?.value ?? 0;
+      if (armorRating > quickVal) {
+        armorEncPenalty = Math.ceil((armorRating - quickVal) / 2);
+        if (attr.quickness) attr.quickness.value = Math.max(1, quickVal - armorEncPenalty);
+      }
+    }
+  }
+
   // Reaction — derived from force-enhanced QUI + INT per RAW
   if (attr.reaction) {
     const baseReaction = Math.floor(
@@ -259,6 +275,7 @@ _prepareCharacter(sys, attr) {
     bioIndexOver,
     effectiveMagic:     Math.round(effectiveMagic * 100) / 100,
     magicSuppressed,
+    armorEncPenalty,
   };
 }
 
@@ -448,7 +465,6 @@ _prepareCharacter(sys, attr) {
       content: `
         <div style="padding:8px 0">
           <p>TN: <strong>${tn}</strong> &nbsp;—&nbsp; Pool: <strong>${pool}</strong> dice</p>
-          <p style="color:var(--sr-amber);font-size:11px;margin-bottom:10px">⚠ Re-roll any 6s before entering your total.</p>
           <label style="display:flex;align-items:center;gap:8px">
             Successes:
             <input type="number" id="phys-successes" value="0" min="0" max="${pool * 5}"
@@ -1314,9 +1330,9 @@ _prepareCharacter(sys, attr) {
 
     const payload = JSON.stringify(ctx).replace(/'/g, '&#39;');
 
-    const _corner = (name, info, weaponName, rawDamage, damageBase, reach, tn, poolClass, tnClass, damageClass) => {
+    const _corner = (name, info, weaponName, rawDamage, damageBase, reach, tn, poolClass, tnClass, damageClass, skillDiceClass) => {
       const specLine  = info?.specName
-        ? `<div class="sr-melee-spec">${info.skillRating} (${info.skillRating + info.specBonus}) — ${info.specName}</div>`
+        ? `<div class="sr-melee-spec">${info.skillRating} (${info.skillRating + info.specBonus}) – ${info.specName}</div>`
         : '';
       const woundMod  = info?.woundMod ?? 0;
       const availPool = info?.availPool ?? 0;
@@ -1335,28 +1351,37 @@ _prepareCharacter(sys, attr) {
           <div class="sr-melee-name">${name}</div>
           <div class="sr-melee-skill">
             ${info?.isDefault
-              ? `<span style="color:var(--sr-amber)">${info.skillName} (defaulting — ${info.skillRating})</span>`
+              ? `<span style="color:var(--sr-amber)">${info.skillName} (defaulting – ${info.skillRating})</span>`
               : `${info?.skillName ?? 'Unknown skill'}${info?.specName ? '' : ` (${info?.skillRating ?? '?'})`}`}
           </div>
           ${specLine}
           <div class="sr-melee-weapon">${weaponName}
             ${reach > 0 ? `<span class="sr-melee-reach"> Reach ${reach}</span>` : ''}
           </div>
-          <div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--sr-muted)">
-            Damage: <input type="text" class="${damageClass}" value="${displayDamage}"
-                     style="width:55px;flex-shrink:0"/>
+          <div class="sr-melee-field-row">
+            <span>Damage:</span>
+            <div><input type="text" class="${damageClass}" value="${displayDamage}" style="width:55px"/></div>
           </div>
-          <div style="font-size:11px;color:var(--sr-text);margin-top:4px">
-            Skill dice: <strong>${skillDice}</strong>${woundMod < 0 ? ` <span style="color:var(--sr-red)">(${woundMod})</span>` : ''}
+          <div class="sr-melee-field-row">
+            <span>Skill:</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <input type="number" class="${skillDiceClass}" value="${skillDice}" min="1" max="30" style="width:40px"/>
+              ${woundMod < 0 ? `<span style="font-size:10px;color:var(--sr-red)">(${woundMod})</span>` : ''}
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--sr-muted)">
-            Pool: <input type="number" class="${poolClass}" value="0"
-                   min="0" max="${availPool}" style="width:40px;flex-shrink:0"/> / ${availPool}
+          <div class="sr-melee-field-row">
+            <span>Pool:</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <input type="number" class="${poolClass}" value="0" min="0" max="${availPool}" style="width:40px"/>
+              <span>/ ${availPool}</span>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--sr-muted)">
-            TN: <input type="number" class="${tnClass}" value="${tn}"
-                   min="2" max="30" style="width:40px;flex-shrink:0"/>
-            <span style="font-size:10px;color:var(--sr-muted)">(${tnCalc})</span>
+          <div class="sr-melee-field-row">
+            <span>TN:</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <input type="number" class="${tnClass}" value="${tn}" min="2" max="30" style="width:40px"/>
+              <span style="font-size:10px">(${tnCalc})</span>
+            </div>
           </div>
         </div>`;
     };
@@ -1368,10 +1393,10 @@ _prepareCharacter(sys, attr) {
           <div class="sr-roll-header">⚔ MELEE — ${atk.name} vs ${def.name}</div>
           <div class="sr-melee-boxing">
             ${_corner(atk.name, ctx.atkInfo, ctx.atkWeaponName, ctx.atkRawDamage, ctx.atkDamageBase,
-                      ctx.atkReach ?? 0, ctx.atkTN, 'sr-melee-atk-pool', 'sr-melee-atk-tn', 'sr-melee-atk-damage')}
+                      ctx.atkReach ?? 0, ctx.atkTN, 'sr-melee-atk-pool', 'sr-melee-atk-tn', 'sr-melee-atk-damage', 'sr-melee-atk-skill-dice')}
             <div class="sr-melee-vs">VS</div>
             ${_corner(def.name, ctx.defInfo, ctx.defWeaponName, ctx.defRawDamage, ctx.defDamageBase,
-                      ctx.defReach ?? 0, ctx.defTN, 'sr-melee-def-pool', 'sr-melee-def-tn', 'sr-melee-def-damage')}
+                      ctx.defReach ?? 0, ctx.defTN, 'sr-melee-def-pool', 'sr-melee-def-tn', 'sr-melee-def-damage', 'sr-melee-def-skill-dice')}
           </div>
           <div class="sr-soak-action">
             <button class="sr-melee-roll-btn" data-payload='${payload}'>
@@ -1398,8 +1423,10 @@ _prepareCharacter(sys, attr) {
     // Pool = skill dice + combat pool dice added by player
     const atkCombatPool = parseInt(card.querySelector('.sr-melee-atk-pool')?.value) || 0;
     const defCombatPool = parseInt(card.querySelector('.sr-melee-def-pool')?.value) || 0;
-    const atkPool = Math.max(1, (ctx.atkSkillDice ?? 1) + atkCombatPool);
-    const defPool = Math.max(1, (ctx.defSkillDice ?? 1) + defCombatPool);
+    const atkSkillDice  = parseInt(card.querySelector('.sr-melee-atk-skill-dice')?.value) || ctx.atkSkillDice || 1;
+    const defSkillDice  = parseInt(card.querySelector('.sr-melee-def-skill-dice')?.value) || ctx.defSkillDice || 1;
+    const atkPool = Math.max(1, atkSkillDice + atkCombatPool);
+    const defPool = Math.max(1, defSkillDice + defCombatPool);
     const atkTN   = Math.max(2, parseInt(card.querySelector('.sr-melee-atk-tn')?.value) || 4);
     const defTN   = Math.max(2, parseInt(card.querySelector('.sr-melee-def-tn')?.value) || 4);
 
